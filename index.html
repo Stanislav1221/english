@@ -1,72 +1,119 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uk">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Learn English Words</title>
+    <title>Вивчення англійських слів</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; background-color: #f0f0f0; }
-        .word-card { padding: 15px; margin: 10px; background: #f4f4f4; border-radius: 10px; cursor: pointer; display: inline-block; width: 150px; text-align: center; font-size: 18px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); transition: transform 0.3s; }
-        .word-card:hover { transform: scale(1.05); }
-        .words-container { display: flex; flex-wrap: wrap; justify-content: center; }
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .word {
+            font-size: 24px;
+            margin: 10px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .word:hover {
+            background-color: #e0e0e0;
+        }
     </style>
 </head>
 <body>
-    <h2>Tap a word to hear the translation and pronunciation</h2>
-    <div class="words-container" id="words-container"></div>
+    <h1>Вивчення англійських слів</h1>
+    <div id="wordContainer"></div>
+    <audio id="audio"></audio>
 
     <script>
         const words = [
-            { en: "apple", ua: "яблуко" },
-            { en: "banana", ua: "банан" },
-            { en: "cat", ua: "кіт" },
-            { en: "dog", ua: "собака" },
-            { en: "sun", ua: "сонце" },
-            { en: "moon", ua: "місяць" },
-            { en: "water", ua: "вода" },
-            { en: "fire", ua: "вогонь" },
-            { en: "milk", ua: "молоко" },
-            { en: "bread", ua: "хліб" },
-            { en: "house", ua: "будинок" },
-            { en: "tree", ua: "дерево" },
-            { en: "car", ua: "автомобіль" },
-            { en: "school", ua: "школа" },
-            { en: "book", ua: "книга" },
-            { en: "pen", ua: "ручка" },
-            { en: "paper", ua: "папір" },
-            { en: "computer", ua: "комп'ютер" },
-            { en: "phone", ua: "телефон" },
-            { en: "friend", ua: "друг" },
-            { en: "family", ua: "сім'я" },
-            { en: "food", ua: "їжа" },
-            { en: "drink", ua: "напій" },
-            { en: "music", ua: "музика" },
-            { en: "movie", ua: "фільм" }
+            { ua: "Привіт", en: "Hello" },
+            { ua: "Собака", en: "Dog" },
+            { ua: "Яблуко", en: "Apple" },
+            { ua: "Дім", en: "House" },
+            { ua: "Кіт", en: "Cat" },
+            { ua: "Молоко", en: "Milk" },
+            { ua: "Вода", en: "Water" },
+            { ua: "Їжа", en: "Food" },
+            { ua: "Магазин", en: "Shop" },
+            { ua: "Робота", en: "Work" },
+            { ua: "Сонце", en: "Sun" },
+            { ua: "Місяць", en: "Moon" },
+            { ua: "Дощ", en: "Rain" },
+            { ua: "Сніг", en: "Snow" },
+            { ua: "Дерево", en: "Tree" },
+            { ua: "Квітка", en: "Flower" },
+            { ua: "Стіл", en: "Table" },
+            { ua: "Стілець", en: "Chair" },
+            { ua: "Місто", en: "City" },
+            { ua: "Село", en: "Village" },
+            { ua: "Друзі", en: "Friends" },
+            { ua: "Родина", en: "Family" },
+            { ua: "Школа", en: "School" },
+            { ua: "Університет", en: "University" },
+            { ua: "Книга", en: "Book" },
+            { ua: "Ручка", en: "Pen" },
+            { ua: "Гроші", en: "Money" },
+            { ua: "Автомобіль", en: "Car" },
+            { ua: "Літак", en: "Plane" },
+            { ua: "Поїзд", en: "Train" },
+            { ua: "Я йду на роботу", en: "I am going to work" },
+            { ua: "Я йду в магазин", en: "I am going to the shop" },
+            { ua: "На вулиці йде дощ", en: "It is raining outside" },
+            { ua: "Я люблю читати книги", en: "I like to read books" },
+            { ua: "Я хочу спати", en: "I want to sleep" },
+            { ua: "Що це?", en: "What is this?" },
+            { ua: "Де ти?", en: "Where are you?" },
+            { ua: "Я тебе люблю", en: "I love you" },
+            { ua: "Скільки це коштує?", en: "How much is this?" },
+            { ua: "Мені подобається ця музика", en: "I like this music" },
+            { ua: "Це мій друг", en: "This is my friend" },
+            { ua: "Мені холодно", en: "I am cold" },
+            { ua: "Мені жарко", en: "I am hot" },
+            { ua: "Я втомився", en: "I am tired" },
+            { ua: "Як тебе звати?", en: "What is your name?" },
+            { ua: "Я не розумію", en: "I do not understand" },
+            { ua: "Допоможіть мені, будь ласка", en: "Help me, please" },
+            { ua: "Я хочу їсти", en: "I want to eat" },
+            { ua: "Це дуже смачно", en: "It is very tasty" }
         ];
 
-        const container = document.getElementById("words-container");
+        function toggleWord(index) {
+            let wordElement = document.getElementById(`word-${index}`);
+            let currentWord = wordElement.innerText;
 
-        words.forEach((word) => {
-            const card = document.createElement("div");
-            card.className = "word-card";
-            card.textContent = word.ua;  // Початково показуємо українське слово
+            if (currentWord === words[index].ua) {
+                wordElement.innerText = words[index].en;
+                playAudio(words[index].en);
+            } else {
+                wordElement.innerText = words[index].ua;
+            }
+        }
 
-            card.onclick = () => {
-                if (card.textContent === word.ua) {
-                    card.textContent = word.en; // Якщо українське слово, змінюємо на англійське
-                    const speech = new SpeechSynthesisUtterance(word.en); // Озвучуємо англійське
-                    speech.lang = "en-US";
-                    window.speechSynthesis.speak(speech);
-                } else {
-                    card.textContent = word.ua; // Якщо англійське слово, повертаємо на українське
-                    const speech = new SpeechSynthesisUtterance(word.ua); // Озвучуємо українське
-                    speech.lang = "uk-UA";
-                    window.speechSynthesis.speak(speech);
-                }
-            };
+        function playAudio(word) {
+            let audio = document.getElementById("audio");
+            let speech = new SpeechSynthesisUtterance(word);
+            speech.lang = "en-US";
+            window.speechSynthesis.speak(speech);
+        }
 
-            container.appendChild(card);
-        });
+        function loadWords() {
+            let wordContainer = document.getElementById("wordContainer");
+            words.forEach((word, index) => {
+                let div = document.createElement("div");
+                div.className = "word";
+                div.id = `word-${index}`;
+                div.innerText = word.ua;
+                div.onclick = function() {
+                    toggleWord(index);
+                };
+                wordContainer.appendChild(div);
+            });
+        }
+
+        loadWords();
     </script>
 </body>
 </html>
